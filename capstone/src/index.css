@@ -1,10 +1,16 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  @font-face {
+    font-family: 'HakgyoansimBadasseugiTTF-L';
+    src: url('./fonts/Hakgyoansim\ Badasseugi\ TTF\ L.ttf') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+  }
+  font-family: "HakgyoansimBadasseugiTTF-L";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  
 }
 
 code {

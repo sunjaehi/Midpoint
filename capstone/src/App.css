@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+@font-face {
+  font-family: 'HakgyoansimBadasseugiTTF-L';
+  src: url('./fonts/Hakgyoansim\ Badasseugi\ TTF\ L.ttf') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
