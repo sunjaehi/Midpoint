@@ -2,13 +2,14 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 import { GoogleMap, LoadScript } from '@react-google-maps/api';
 import {Wrapper} from '@googlemaps/react-wrapper';
+import config from "../apikey";
 
     // const { Kakao } = window;
 
     // const handleKeyPress = (e) => {
     //     if (e.key === "Enter") setKeyword(searchInputValue);
     // };
-    <Wrapper apiKey={"AIzaSyBPb-VNURqSH9BuPgtRvyCUC-FyQ4vg2Ao"} libraries={"places"}>
+    <Wrapper apiKey="config.API_KEY1" libraries={"places"}>
         <googlemap></googlemap>
     </Wrapper>
 
@@ -30,5 +31,4 @@ import {Wrapper} from '@googlemaps/react-wrapper';
             
         );
     }
-// AIzaSyDTupQgS7W5wExZHkOeaJnt7yG1vJejBAk
 export default Inputpage;
