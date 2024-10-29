@@ -23,9 +23,9 @@ const Custombutton = styled.button`
 
 const AutoCompleteSearch = () => {
     const navigate = useNavigate();
-    const navigateToResult = () => {
-        navigate("/Resultpage");
-    }
+    // const navigateToMid = () => {
+    //     navigate("/Resultpage");
+    // }
 
     const [query1, setQuery1] = useState('');
     const [query2, setQuery2] = useState('');
@@ -54,6 +54,41 @@ const AutoCompleteSearch = () => {
         setQuery(suggestion.place_name);
         setSuggestions([]);
     };
+
+    const getCoordinates = async (address) => {
+        return new Promise((resolve, reject) => {
+            const geocoder = new window.kakao.maps.services.Geocoder();
+            geocoder.addressSearch(address, (result, status) => {
+                if (status === window.kakao.maps.services.Status.OK) {
+                    resolve({
+                        latitude : parseFloat(result[0].y),
+                        longitude : parseFloat(result[0].x)
+                    });
+                } else {
+                    reject("Address not found");
+                }
+            });
+        });
+    };
+
+    const navigateToResult = async () => {
+        try {
+            const location1 = await getCoordinates(query1);
+            const location2 = await getCoordinates(query2);
+
+            const response = await fetch('http://localhost:3000/calculate-midpoint', {
+                method : 'POST',
+                headers : {'Content-Type' : 'application/json'},
+                body : JSON.stringify({location1, location2})
+            });
+            const data = await response.json();
+            console.log("Midpoint: ", data.midpoint);
+
+            navigate("/Resultpage", {state : {midpoint : data.midpoint}});
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <div style={{background : '#FFF7D1', height:'100vh'}}>
