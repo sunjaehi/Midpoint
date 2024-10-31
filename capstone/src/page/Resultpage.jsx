@@ -1,5 +1,6 @@
-import React, {useState, useEffect, useRef } from "react";
+import React, {useState, useRef } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { useLocation } from "react-router-dom";
 
 function Resultpage() {
     const [state, setState] = useState({
@@ -16,9 +17,28 @@ function Resultpage() {
 
     }
 
+    const location = useLocation();
+    const midpoint = location.state?.midpoint; 
+    
     return (
         <div>
-            <div style={{position:'relative', width:'100vw', height:'100vh'}}>
+            {midpoint ? (
+                <div>
+                    <h2>중간지점</h2>
+                    <p>위도 : {midpoint.latitude}</p>
+                    <p>경도 : {midpoint.longitude}</p>
+                </div>
+            ) : (
+                <p>중간지점을 계산할수 없습니다.ㅠㅠㅠ</p>
+            )}
+
+        </div>
+    );
+}
+
+export default Resultpage;
+
+{/* <div style={{position:'relative', width:'100vw', height:'100vh'}}>
                 <Map    
                     center={state.center}
                     style={{width:"100%", height:"100%"}}
@@ -33,10 +53,4 @@ function Resultpage() {
                         }}
                     />
                 </Map>
-            </div>
-
-        </div>
-    );
-}
-
-export default Resultpage;
+            </div> */}
