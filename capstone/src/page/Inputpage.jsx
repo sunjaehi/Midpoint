@@ -32,9 +32,14 @@ const AutoCompleteSearch = () => {
     const [suggestions, setSuggestions] = useState([]);
     const [activeInput, setActiveInput] = useState(null);
 
-    const handleInputChange = (e, setQuery) => {
+    //선택한 장소의 정보 저장
+    const [selectedPlace1, setSelectedPlace1] = useState(null);
+    const [selectedPlace2, setSelectedPlace2] = useState(null);
+
+    const handleInputChange = (e, setQuery, setSelectedPlace) => {
         const input = e.target.value;
         setQuery(input);
+        setSelectedPlace(null);
 
         if (input.trim()) {
             const ps = new window.kakao.maps.services.Places();
@@ -50,31 +55,30 @@ const AutoCompleteSearch = () => {
         }
     };
 
-    const handleSuggestionClick = (suggestion, setQuery) => {
+    const handleSuggestionClick = (suggestion, setQuery, setSelectedPlace) => {
         setQuery(suggestion.place_name);
+        setSelectedPlace(suggestion);
         setSuggestions([]);
     };
 
-    const getCoordinates = async (address) => {
+    const getCoordinates = async (place) => {
         return new Promise((resolve, reject) => {
-            const geocoder = new window.kakao.maps.services.Geocoder();
-            geocoder.addressSearch(address, (result, status) => {
-                if (status === window.kakao.maps.services.Status.OK) {
-                    resolve({
-                        latitude : parseFloat(result[0].y),
-                        longitude : parseFloat(result[0].x)
-                    });
-                } else {
-                    reject("Address not found");
-                }
+            if (!place) {
+                reject("No place selected");
+                return;
+            }
+            resolve({
+                latitude : parseFloat(place.y),
+                longitude : parseFloat(place.x),
             });
         });
     };
+    
 
     const navigateToResult = async () => {
         try {
-            const location1 = await getCoordinates(query1);
-            const location2 = await getCoordinates(query2);
+            const location1 = await getCoordinates(selectedPlace1);
+            const location2 = await getCoordinates(selectedPlace2);
 
             const response = await fetch('http://localhost:3000/calculate-midpoint', {
                 method : 'POST',
@@ -103,7 +107,7 @@ const AutoCompleteSearch = () => {
                         type="text"
                         placeholder="원하는 장소를 입력해주세요"
                         value={query1}
-                        onChange={(e) => handleInputChange(e, setQuery1)}
+                        onChange={(e) => handleInputChange(e, setQuery1, setSelectedPlace1)}
                         onFocus={()=>setActiveInput(1)}
                         style={{
                             padding: '10px',
@@ -131,7 +135,7 @@ const AutoCompleteSearch = () => {
                             {suggestions.map((suggestion) => (
                                 <li
                                     key={suggestion.id}
-                                    onClick={() => handleSuggestionClick(suggestion, setQuery1)}
+                                    onClick={() => handleSuggestionClick(suggestion, setQuery1, setSelectedPlace1)}
                                     style={{ padding: '10px', cursor: 'pointer' }}
                                 >
                                     {suggestion.place_name}
@@ -147,7 +151,7 @@ const AutoCompleteSearch = () => {
                         type="text"
                         placeholder="원하는 장소를 입력해주세요"
                         value={query2}
-                        onChange={(e) => handleInputChange(e, setQuery2)}
+                        onChange={(e) => handleInputChange(e, setQuery2, setSelectedPlace2)}
                         onFocus={()=>setActiveInput(2)}
                         style={{
                             padding: '10px',
@@ -175,7 +179,7 @@ const AutoCompleteSearch = () => {
                             {suggestions.map((suggestion) => (
                                 <li
                                     key={suggestion.id}
-                                    onClick={() => handleSuggestionClick(suggestion, setQuery2)}
+                                    onClick={() => handleSuggestionClick(suggestion, setQuery2, setSelectedPlace2)}
                                     style={{ padding: '10px', cursor: 'pointer' }}
                                 >
                                     {suggestion.place_name}
