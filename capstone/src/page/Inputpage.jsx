@@ -79,20 +79,29 @@ const AutoCompleteSearch = () => {
         try {
             const location1 = await getCoordinates(selectedPlace1);
             const location2 = await getCoordinates(selectedPlace2);
-
-            const response = await fetch('http://localhost:3000/calculate-midpoint', {
-                method : 'POST',
-                headers : {'Content-Type' : 'application/json'},
-                body : JSON.stringify({location1, location2})
+    
+            console.log("Location 1:", location1);  // 좌표 확인
+            console.log("Location 2:", location2);  // 좌표 확인
+    
+            const response = await fetch('http://localhost:4000/calculate-midpoint', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ location1, location2 })
             });
+    
             const data = await response.json();
-            console.log("Midpoint: ", data.midpoint);
-
-            navigate("/Resultpage", {state : {midpoint : data.midpoint}});
+            console.log("Response from server:", data);
+    
+            if (data.midpoint) {
+                navigate("/Resultpage", { state: { midpoint: data.midpoint } });
+            } else {
+                console.error("Midpoint calculation failed:", data.error || "Unknown error");
+            }
         } catch (error) {
-            console.error(error);
+            console.error("Error in navigateToResult:", error);
         }
-    }
+    };
+    
 
     return (
         <div style={{background : '#FFF7D1', height:'100vh'}}>

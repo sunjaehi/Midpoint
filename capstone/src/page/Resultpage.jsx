@@ -29,7 +29,7 @@ function Resultpage() {
                     <p>경도 : {midpoint.longitude}</p>
                 </div>
             ) : (
-                <p>중간지점을 계산할수 없습니다.ㅠㅠㅠ</p>
+                <p>중간지점을 계산할수 없습니다.</p>
             )}
 
         </div>
