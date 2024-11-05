@@ -1,56 +1,49 @@
-import React, {useState, useRef } from "react";
-import { Map, MapMarker } from "react-kakao-maps-sdk";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Map, MapMarker } from 'react-kakao-maps-sdk';
+import axios from 'axios';
 
-function Resultpage() {
-    const [state, setState] = useState({
-        center:{lat: 37.6159738, lng: 127.0115837},
-        
-    });
-    const [level, setLevel] = useState(5);
-    const mapRef = useRef();
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const map = mapRef.current;
-        const currentLat = map.getCenter().getLat();
-        const currentLng = map.getCenter().getLng();
-
-    }
-
+const Resultpage = () => {
     const location = useLocation();
-    const midpoint = location.state?.midpoint; 
-    
-    return (
-        <div>
-            {midpoint ? (
-                <div>
-                    <h2>중간지점</h2>
-                    <p>위도 : {midpoint.latitude}</p>
-                    <p>경도 : {midpoint.longitude}</p>
-                </div>
-            ) : (
-                <p>중간지점을 계산할수 없습니다.</p>
-            )}
+    const { midpoint, location1, location2 } = location.state || {};
+    const mapRef = useRef();
 
-        </div>
+    useEffect(() => {
+        if (mapRef.current && location1 && location2 && midpoint) {
+            const map = mapRef.current;
+            const bounds = new window.kakao.maps.LatLngBounds();
+
+            //모든 위치를 경계 범위에 추가
+            bounds.extend(new window.kakao.maps.LatLng(location1.latitude, location1.longitude));
+            bounds.extend(new window.kakao.maps.LatLng(location2.latitude, location2.longitude));
+            bounds.extend(new window.kakao.maps.LatLng(midpoint.latitude, midpoint.longitude));
+            //모든 위치가 한번에 포함되도록 지도 레벨 조정
+            map.setBounds(bounds);
+        }
+    }, [location1, location2, midpoint]);
+
+    return (
+        <Map center={{ lat: midpoint.latitude, lng: midpoint.longitude }} level={3} style={{ width: "100%", height: "100vh" }} onCreate={(map)=>(mapRef.current = map)}>
+            {/* 장소 1 마커 */}
+            {location1 && (
+                <MapMarker position={{ lat: location1.latitude, lng: location1.longitude }}>
+                    <div style={{ color: "#000", borderRadius : "5px", background : "white", padding : "5px" }}>장소 1 : {location1.name}</div>
+                </MapMarker>
+            )}
+            {/* 장소 2 마커 */}
+            {location2 && (
+                <MapMarker position={{ lat: location2.latitude, lng: location2.longitude }}>
+                    <div style={{ color: "#000", borderRadius : "5px", background : "white", padding : "5px" }}>장소 2 : {location2.name}</div>
+                </MapMarker>
+            )}
+            {/* 중간지점 마커 */}
+            {midpoint && (
+                <MapMarker position={{ lat: midpoint.latitude, lng: midpoint.longitude }}>
+                    <div style={{ color: "red" }}>중간 지점</div>
+                </MapMarker>
+            )}
+        </Map>
     );
-}
+};
 
 export default Resultpage;
-
-{/* <div style={{position:'relative', width:'100vw', height:'100vh'}}>
-                <Map    
-                    center={state.center}
-                    style={{width:"100%", height:"100%"}}
-                    level={level}
-                    ref={mapRef}
-                >
-                    <MapMarker
-                        position={state.center}
-                        image={{
-                            src:"https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
-                            size:{width: 30, height:45},
-                        }}
-                    />
-                </Map>
-            </div> */}
