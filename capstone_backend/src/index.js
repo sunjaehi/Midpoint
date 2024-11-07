@@ -18,6 +18,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const axios = require('axios');
 
 const app = express();
 app.use(cors()); // CORS 설정
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 // 나머지 코드..
 
 const PORT = 4000;
+const KAKAO_API_KEY = '6204ad0ff0932f6be87b31f62451d1cf';
 
 //중간 지점을 계산하는 함수
 const calculateMidpoint = (location1, location2) => {
@@ -62,7 +64,45 @@ app.post('/calculate-midpoint', (req, res) => {
   const midpoint = calculateMidpoint(location1, location2);
   res.json({ midpoint });
 });
+app.post('/nearest-location', async (req, res) => {
+  const { latitude, longitude } = req.body;
 
+  if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+    console.log("Invalid request data format: ", req.body);
+    return res.status(400).json({error: "Invalid request data" });
+  }
+  try {
+    //Kakao Local API 요청
+    const response = await axios.get('https://dapi.kakao.com/v2/local/search/category.json', {
+      headers : {
+        Authorization : `KakaoAK ${KAKAO_API_KEY}`
+      },
+      params : {
+        category_group_code : 'SW8',
+        x : longitude,
+        y : latitude,
+        radius : 2000,
+        sort : 'distance'
+      }
+    });
+
+    const locations = response.data.documents;
+    const nearestLocation = locations.length > 0 ? locations[0] : null;
+
+    if (nearestLocation) {
+      res.json({
+        name : nearestLocation.place_name,
+        address : nearestLocation.road_address_name || nearestLocation.address_name,
+        distance : nearestLocation.distance
+      });
+    } else {
+      res.json({ message : "지하철역이나 건물을 찾을 수 없습니다."});
+    }
+  } catch (error) {
+    console.error("Error fetching nearest location:",error);
+    res.status(500).json({error:"Failed to fetch nearest location"});
+  }
+});
 
 
 
