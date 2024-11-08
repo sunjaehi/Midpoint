@@ -30,13 +30,15 @@ const findNearestLocation = async (latitude, longitude) => {
     try {
       const response = await axios.get('https://dapi.kakao.com/v2/local/search/category.json', {
         headers: {
-          Authorization: `KakaoAK ${KAKAO_API_KEY}`
+          Authorization: `KakaoAK ${KAKAO_API_KEY}`,
+          KA : "os=web; origin=http://localhost:4000", //KA 헤더 추가
+          Referer : "http://localhost:3000"
         },
         params: {
           category_group_code: category,
           x: longitude,
           y: latitude,
-          radius: 2000,
+          radius: 5000,
           sort: 'distance'
         }
       });
@@ -59,7 +61,6 @@ const findNearestLocation = async (latitude, longitude) => {
       }
     } catch (error) {
       console.error(`Error fetching ${category} data:`, error.message);
-      // 상태 코드와 오류 응답 출력
       if (error.response) {
         console.error('Error response data:', error.response.data);
         console.error('Error response status:', error.response.status);
@@ -72,6 +73,7 @@ const findNearestLocation = async (latitude, longitude) => {
 
 // /calculate-midpoint 엔드포인트 설정
 app.post('/calculate-midpoint', async (req, res) => {
+  console.log("Request received at /calculate-midpoint:", req.body); // 로그 추가
   const { location1, location2 } = req.body;
 
   if (!location1 || !location2 ||
