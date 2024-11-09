@@ -73,61 +73,35 @@ const AutoCompleteSearch = () => {
             });
         });
     };
-    
+
 
     const navigateToResult = async () => {
         try {
-            const location1 = {
-                ...(await getCoordinates(selectedPlace1)),
-                name : selectedPlace1 ? selectedPlace1.place_name : '',
-            };
-            const location2 = {
-                ...(await getCoordinates(selectedPlace2)),
-                name : selectedPlace2 ? selectedPlace2.place_name : '',
-            };
-    
+            const location1 = await getCoordinates(selectedPlace1);
+            const location2 = await getCoordinates(selectedPlace2);
+
             console.log("Location 1:", location1);  // 좌표 확인
             console.log("Location 2:", location2);  // 좌표 확인
-    
-            const midpointResponse = await fetch('http://localhost:4000/calculate-midpoint', {
+
+            const response = await fetch('http://localhost:4000/calculate-midpoint', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ location1, location2 })
             });
-    
-            const midpointData = await midpointResponse.json();
-            console.log("Response from server:", midpointData);
-    
-            if (midpointData.midpoint) {
-                const nearestLocationResponse = await fetch('http://localhost:4000/nearest-location', {
-                    method : 'POST',
-                    headers : {'Content-Type' : 'application/json'},
-                    body : JSON.stringify({
-                        latitude : midpointData.midpoint.latitude,
-                        longitude : midpointData.midpoint.longitude
-                    })
-                });
-                const nearestLocationData = await nearestLocationResponse.json();
-                console.log("Nearest location: ", nearestLocationData);
 
-                //중간지점과 가장 가까운 장소 정보를 페이지로 전달하여 이동
-                navigate("/Resultpage", {
-                    state : {
-                        midpoint : midpointData.midpoint,
-                        location1,
-                        location2,
-                        nearestLocation : nearestLocationData
-                    }
-                });
+            const data = await response.json();
+            console.log("Response from server:", data);
+
+            if (data.midpoint) {
+                navigate("/Resultpage", { state: { midpoint: data.midpoint } });
             } else {
-                console.error("Midpoint calculation failed:", midpointData.error || "Unknown error");
+                console.error("Midpoint calculation failed:", data.error || "Unknown error");
             }
         } catch (error) {
-            console.error("Error in navigateToResult", error);
+            console.error("Error in navigateToResult:", error);
         }
-                
     };
-    
+
 
     return (
         <div style={{background : '#FFF7D1', height:'100vh'}}>
