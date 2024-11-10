@@ -6,8 +6,6 @@ const app = express();
 app.use(cors()); // CORS 설정
 app.use(bodyParser.json());
 
-// 나머지 코드..
-
 const PORT = 4000;
 
 //중간 지점을 계산하는 함수

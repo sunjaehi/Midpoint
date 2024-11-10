@@ -93,7 +93,13 @@ const AutoCompleteSearch = () => {
             console.log("Response from server:", data);
 
             if (data.midpoint) {
-                navigate("/Resultpage", { state: { midpoint: data.midpoint } });
+                navigate("/Resultpage", {
+                     state: {
+                        midpoint: data.midpoint,
+                        location1 : {...location1, name : selectedPlace1.place_name},
+                        location2 : {...location2, name : selectedPlace2.place_name}
+                     }
+                    });
             } else {
                 console.error("Midpoint calculation failed:", data.error || "Unknown error");
             }

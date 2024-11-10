@@ -9,11 +9,6 @@ const Resultpage = () => {
     const { midpoint, location1, location2 } = location.state || {};
 
     useEffect(() => {
-        // if (!midpoint || !location1 || !location2) {
-        //     // 필요한 데이터가 없으면 InputPage로 리다이렉트
-        //     navigate('/');
-        //     return;
-        // }
 
         if (mapRef.current && location1 && location2 && midpoint) {
             const map = mapRef.current;
