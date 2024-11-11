@@ -97,7 +97,8 @@ const AutoCompleteSearch = () => {
                      state: {
                         midpoint: data.midpoint,
                         location1 : {...location1, name : selectedPlace1.place_name},
-                        location2 : {...location2, name : selectedPlace2.place_name}
+                        location2 : {...location2, name : selectedPlace2.place_name},
+                        nearestPlace : data.nearestPlace // nearestPlace 데이터 추가
                      }
                     });
             } else {

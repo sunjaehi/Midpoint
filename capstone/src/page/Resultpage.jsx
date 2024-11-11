@@ -1,11 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
 
 const Resultpage = () => {
     const location = useLocation();
     const mapRef = useRef();
-    const { midpoint, location1, location2 } = location.state || {};
+    const { midpoint, location1, location2, nearestPlace } = location.state || {};  // nearestPlace 추가
 
     const handleMapLoad = (map) => {
         mapRef.current = map;
@@ -17,9 +17,18 @@ const Resultpage = () => {
             bounds.extend(new window.kakao.maps.LatLng(location2.latitude, location2.longitude));
             bounds.extend(new window.kakao.maps.LatLng(midpoint.latitude, midpoint.longitude));
 
+            if (nearestPlace) {
+                bounds.extend(new window.kakao.maps.LatLng(nearestPlace.latitude, nearestPlace.longitude));
+            }
+
             map.setBounds(bounds); // 모든 위치가 보이도록 범위 설정
         }
     };
+
+    useEffect(() => {
+        console.log("nearestPlace : ", nearestPlace);
+
+    },[nearestPlace]);
 
     return (
         <Map
@@ -43,10 +52,21 @@ const Resultpage = () => {
                     </div>
                 </MapMarker>
             )}
-            {/* 중간지점 마커 */}
+            {/* 중간지점 마커
             {midpoint && (
                 <MapMarker position={{ lat: midpoint.latitude, lng: midpoint.longitude }}>
                     <div style={{ color: "red" }}>중간 지점</div>
+                </MapMarker>
+            )} */}
+            {/* 가장 가까운 장소 마커 */}
+            {nearestPlace && (
+                <MapMarker position={{
+                    lat: parseFloat(nearestPlace.latitude),
+                    lng: parseFloat(nearestPlace.longitude),
+                    }}>
+                    <div style={{ color: "blue", borderRadius: "5px", background: "white", padding: "5px" }}>
+                        가장 가까운 장소 : {nearestPlace.place_name}
+                    </div>
                 </MapMarker>
             )}
         </Map>
