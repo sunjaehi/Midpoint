@@ -8,6 +8,7 @@ app.use(cors()); // CORS 설정
 app.use(bodyParser.json());
 
 const PORT = 4000;
+const KAKAO_API_KEY = '43621e0871a5db75caebb339570f5139';
 
 // 중간 지점을 계산하는 함수
 const calculateMidpoint = (location1, location2) => {
@@ -26,7 +27,7 @@ app.use((req, res, next) => {
 
 // Kakao API를 통해 카테고리의 장소를 검색하는 함수
 const searchNearbyPlace = async (latitude, longitude, categoryGroupCode) => {
-  const KAKAO_API_KEY = '43621e0871a5db75caebb339570f5139';
+  
   const url = `https://dapi.kakao.com/v2/local/search/category.json?category_group_code=${categoryGroupCode}&x=${longitude}&y=${latitude}&radius=2000&sort=distance`;
   
   try {
@@ -47,6 +48,29 @@ const searchNearbyPlace = async (latitude, longitude, categoryGroupCode) => {
     }
   } catch (error) {
     console.error('Error searching nearby place:', error.message);
+    return null;
+  }
+};
+
+// Kakao내비 API를 통한 이동 시간 요청
+const getDrivingTime = async (start, end) => {
+  const url = `https://apis-navi.kakaomobility.com/v1/directions?origin=${encodeURIComponent(start.longitude)},${encodeURIComponent(start.latitude)}&destination=${encodeURIComponent(end.longitude)},${encodeURIComponent(end.latitude)}&priority=RECOMMEND`;
+  
+  try {
+    const response = await axios.get(url, {
+      headers: { Authorization: `KakaoAK ${KAKAO_API_KEY}` },
+    });
+    
+    // duration 값 확인
+    if (response.data?.routes?.[0]?.summary?.duration) {
+      const drivingTime = response.data.routes[0].summary.duration;
+      return Math.floor(drivingTime / 60); // 초를 분으로 변환
+    } else {
+      console.warn("No duration data found in response.");
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching driving time:', error.response?.data || error.message);
     return null;
   }
 };
@@ -80,7 +104,15 @@ app.post('/calculate-midpoint', async (req, res) => { // app.post()는 HTTP POST
       .filter(Boolean) // 유효한 장소만 필터링
       .sort((a, b) => a.distance - b.distance)[0]; // 거리순으로 정렬 후 가장 가까운 장소 선택
 
-    res.json({ midpoint, nearestPlace });
+    const drivingTime1 = nearestPlace ? await getDrivingTime(location1, nearestPlace) : null;
+    const drivingTime2 = nearestPlace ? await getDrivingTime(location2, nearestPlace) : null;
+
+    res.json({
+      midpoint,
+      nearestPlace,
+      drivingTime1,
+      drivingTime2
+    });
   } catch (error) {
     console.error("Error finding nearest places:", error.message);
     res.status(500).json({ error: "Failed to find nearest places" });
