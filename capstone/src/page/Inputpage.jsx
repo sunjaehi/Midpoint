@@ -98,7 +98,9 @@ const AutoCompleteSearch = () => {
                         midpoint: data.midpoint,
                         location1 : {...location1, name : selectedPlace1.place_name},
                         location2 : {...location2, name : selectedPlace2.place_name},
-                        nearestPlace : data.nearestPlace // nearestPlace 데이터 추가
+                        nearestPlace : data.nearestPlace, // nearestPlace 데이터 추가
+                        drivingTime1 : data.drivingTime1,
+                        drivingTime2 : data.drivingTime2
                      }
                     });
             } else {
@@ -113,7 +115,7 @@ const AutoCompleteSearch = () => {
     return (
         <div style={{background : '#FFF7D1', height:'100vh'}}>
             <div style={{textAlign : 'center', fontSize : '30px', fontWeight:'lighter', paddingTop:'60px'}}>
-                원하는 장소를 입력해주세요
+                MidPoint
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '100px', paddingTop : '50px'}}>
