@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Map, MapMarker, CustomOverlayMap } from 'react-kakao-maps-sdk';
+import styled from 'styled-components';
+import { Map, MapMarker, CustomOverlayMap, Polyline } from 'react-kakao-maps-sdk';
+
 
 const Resultpage = () => {
     const location = useLocation();
     const mapRef = useRef();
-    const { midpoint, location1, location2, nearestPlace } = location.state || {};  // nearestPlace 추가
+    const { midpoint, location1, location2, nearestPlace, drivingTime1, drivingTime2 } = location.state || {};  // nearestPlace 추가
+    const markerImage = "https://img.icons8.com/?size=100&id=13778&format=png&color=000000";
 
     const handleMapLoad = (map) => {
         mapRef.current = map;
@@ -27,8 +30,9 @@ const Resultpage = () => {
 
     useEffect(() => {
         console.log("nearestPlace : ", nearestPlace);
-
-    },[nearestPlace]);
+        console.log("Driving Time : ", drivingTime1);
+        console.log("Driving Time2 : ", drivingTime2);
+    },[nearestPlace, drivingTime1, drivingTime2]);
 
     return (
         <Map
@@ -39,7 +43,7 @@ const Resultpage = () => {
             {/* 장소 1 마커 */}
             {location1 && (
                 <CustomOverlayMap position={{ lat: location1.latitude, lng: location1.longitude }}>
-                    <div style={{ color: "#000", borderRadius: "5px", borderColor : "black", background: "white", padding: "5px" }}>
+                    <div style={{ color: "#000", borderRadius: "5px", background: "white", padding: "5px" }}>
                         장소 1 : {location1.name}
                     </div>
                 </CustomOverlayMap>
@@ -59,13 +63,74 @@ const Resultpage = () => {
                 </MapMarker>
             )} */}
             {/* 가장 가까운 장소 마커 */}
-            {nearestPlace && (
+            <MapMarker 
+    position={{
+        lat: parseFloat(nearestPlace.latitude),
+        lng: parseFloat(nearestPlace.longitude),
+    }}
+    image={{
+        src : markerImage,
+        size : {
+            width : 50,
+            height : 55,
+        },
+    }}
+/>
+
+{nearestPlace && (
+    <CustomOverlayMap position={{
+        lat: parseFloat(nearestPlace.latitude),
+        lng: parseFloat(nearestPlace.longitude),
+    }}
+    yAnchor={3.3}
+    >
+        <div>
+            <a 
+                href={nearestPlace.place_url}
+                target='_blank'
+                rel='noreferrer'
+                style={{ color: "#6A42C2", fontSize: "15px", fontWeight: "bold", borderRadius: "5px", background: "white", padding: "5px" }}
+            >
+                Midpoint : {nearestPlace.place_name}
+            </a>
+        </div>
+    </CustomOverlayMap>
+)}
+
+            <Polyline 
+                path={[
+                    [
+                        {lat : location1.latitude, lng : location1.longitude},
+                        {lat : nearestPlace.latitude, lng : nearestPlace.longitude},
+                        {lat : location2.latitude, lng : location2.longitude},
+                    ]
+                ]}
+                strokeWeight={8}
+                strokeColor={'#6A42C2'}
+                strokeOpacity={0.7}
+                strokeStyle={'solid'}
+            />
+            {drivingTime1 && (
                 <CustomOverlayMap position={{
-                    lat: parseFloat(nearestPlace.latitude),
-                    lng: parseFloat(nearestPlace.longitude),
-                    }}>
-                    <div style={{ color: "blue", borderRadius: "5px", background: "white", padding: "5px" }}>
-                        가장 가까운 장소 : {nearestPlace.place_name}
+                    lat : nearestPlace.latitude,
+                    lng : nearestPlace.longitude
+                }}
+                yAnchor={4.5}
+                >
+                    <div style={{ background : "#fff", color : "#333", padding : "5px", borderRadius : "5px", fontWeight : "bold"}}>
+                        🚗 장소 1 ➜ Midpoint : {drivingTime1}분
+                    </div>
+                </CustomOverlayMap>
+            )}
+            {drivingTime2 && (
+                <CustomOverlayMap position={{
+                    lat : nearestPlace.latitude,
+                    lng : nearestPlace.longitude
+                }}
+                yAnchor={-0.5}
+                >
+                    <div style={{ background : "white", padding : "5px", borderRadius : "5px", fontWeight : "bold"}}>
+                        🚗 장소 2 ➜ Midpoint : {drivingTime2}분
                     </div>
                 </CustomOverlayMap>
             )}

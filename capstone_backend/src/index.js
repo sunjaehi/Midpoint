@@ -81,6 +81,7 @@ app.post('/calculate-midpoint', async (req, res) => { // app.post()는 HTTP POST
 
   console.log("Received location1:", location1);
   console.log("Received location2:", location2);
+  
 
   if (
     !location1 || !location2 ||
