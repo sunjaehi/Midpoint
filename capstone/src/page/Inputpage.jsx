@@ -21,7 +21,7 @@ const Custombutton = styled.button`
     }
 `;
 
-const AutoCompleteSearch = () => {
+const Inputpage = () => {
     const navigate = useNavigate();
     // const navigateToMid = () => {
     //     navigate("/Resultpage");
@@ -114,7 +114,7 @@ const AutoCompleteSearch = () => {
 
     return (
         <div style={{background : '#FFF7D1', height:'100vh'}}>
-            <div style={{textAlign : 'center', fontSize : '30px', fontWeight:'lighter', paddingTop:'60px'}}>
+            <div style={{textAlign : 'center', fontSize : '30px', fontWeight:'lighter', paddingTop:'60px', fontWeight : "bold"}}>
                 MidPoint
             </div>
 
@@ -219,4 +219,4 @@ const AutoCompleteSearch = () => {
     );
 };
 
-export default AutoCompleteSearch;
+export default Inputpage;
