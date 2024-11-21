@@ -36,6 +36,8 @@ const Inputpage = () => {
     const [selectedPlace1, setSelectedPlace1] = useState(null);
     const [selectedPlace2, setSelectedPlace2] = useState(null);
 
+    const [categoryCode, setCategoryCode] = useState('');
+
     const handleInputChange = (e, setQuery, setSelectedPlace) => {
         const input = e.target.value;
         setQuery(input);
@@ -83,10 +85,15 @@ const Inputpage = () => {
             console.log("Location 1:", location1);  // 좌표 확인
             console.log("Location 2:", location2);  // 좌표 확인
 
+            if (!categoryCode) {
+                alert("카테고리 그룹 코드를 선택하세요!");
+                return;
+            }
+
             const response = await fetch('http://localhost:4000/calculate-midpoint', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ location1, location2 })
+                body: JSON.stringify({ location1, location2, categoryCode })
             });
 
             const data = await response.json();
@@ -206,6 +213,40 @@ const Inputpage = () => {
                         </ul>
                     )}
                 </div>
+            </div>
+
+            <div style={{display:'flex', justifyContent:'center', paddingTop:'30px'}}>
+                <select 
+                    value={categoryCode}
+                    onChange={(e) => setCategoryCode(e.target.value)}
+                    style={{
+                        padding : '10px',
+                        fontSize : '16px',
+                        borderRadius : '10px',
+                        border : '1px solid #ddd',
+                        width : '300px'
+                    }}
+                >
+                    <option value="">카테고리 선택</option>
+                    <option value="MT1">대형마트</option>
+                    <option value="CS2">편의점</option>
+                    <option value="PS3">어린이집, 유치원</option>
+                    <option value="SC4">학교</option>
+                    <option value="AC5">학원</option>
+                    <option value="PK6">주차장</option>
+                    <option value="OL7">주유소</option>
+                    <option value="SW8">지하철역</option>
+                    <option value="BK9">은행</option>
+                    <option value="CT1">문화시설</option>
+                    <option value="AG2">중개업소</option>
+                    <option value="PO3">공공기관</option>
+                    <option value="AT4">관광명소</option>
+                    <option value="AD5">숙박</option>
+                    <option value="FD6">음식점</option>
+                    <option value="CE7">카페</option>
+                    <option value="HP8">병원</option>
+                    <option value="PM9">약국</option>
+                </select>
             </div>
             <Row style={{marginTop:'80px', display : 'flex', justifyContent : 'center', gap : '300px'}}>
                 <Custombutton type='button' value="input" style={{width:'200px', height:'40px', padding:'0'}}>

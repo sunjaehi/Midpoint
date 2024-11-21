@@ -77,11 +77,11 @@ const getDrivingTime = async (start, end) => {
 
 // /calculate-midpoint 엔드포인트 설정
 app.post('/calculate-midpoint', async (req, res) => { // app.post()는 HTTP POST 요청을 특정 경로로 받아들이고 요청에 대한 처리
-  const { location1, location2 } = req.body;
+  const { location1, location2, categoryCode } = req.body;
 
   console.log("Received location1:", location1);
   console.log("Received location2:", location2);
-  
+  console.log("selected categoryCode: ", categoryCode);
 
   if (
     !location1 || !location2 ||
@@ -97,13 +97,11 @@ app.post('/calculate-midpoint', async (req, res) => { // app.post()는 HTTP POST
 
   // 중간좌표 근처의 카페, 관광명소, 지하철역 검색
   try {
-    const cafe = await searchNearbyPlace(midpoint.latitude, midpoint.longitude, 'CE7');
-    const touristAttraction = await searchNearbyPlace(midpoint.latitude, midpoint.longitude, 'AT4');
-    const subwayStation = await searchNearbyPlace(midpoint.latitude, midpoint.longitude, 'SW8');
+    // const cafe = await searchNearbyPlace(midpoint.latitude, midpoint.longitude, 'CE7');
+    // const touristAttraction = await searchNearbyPlace(midpoint.latitude, midpoint.longitude, 'AT4');
+    // const subwayStation = await searchNearbyPlace(midpoint.latitude, midpoint.longitude, 'SW8');
 
-    const nearestPlace = [cafe, touristAttraction, subwayStation]
-      .filter(Boolean) // 유효한 장소만 필터링
-      .sort((a, b) => a.distance - b.distance)[0]; // 거리순으로 정렬 후 가장 가까운 장소 선택
+    const nearestPlace = await searchNearbyPlace(midpoint.latitude, midpoint.longitude, categoryCode);
 
     const drivingTime1 = nearestPlace ? await getDrivingTime(location1, nearestPlace) : null;
     const drivingTime2 = nearestPlace ? await getDrivingTime(location2, nearestPlace) : null;
